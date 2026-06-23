@@ -1,16 +1,27 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { getUsersParamsDto } from './dto/get-users-param.dto';
 import { User } from './entities/user.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UsersService {
-  constructor() {}
-  async create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
-  }
+  constructor(
+    // Tiêm userRepository vao service 
+    @InjectRepository(User)// tiêm user vào Repository
+    private userRepository: Repository<User>,
+  ){}
 
+  async create(createUserDto: CreateUserDto) {
+    const user = await this.userRepository.findOne({where:{email: createUserDto.email}});
+    if(user){
+      throw new BadRequestException('Email đã tồn tại');
+    }
+    const newUser = this.userRepository.create(createUserDto);// tạo 1 đối tượng User mới từ CreateUserDto
+    return this.userRepository.save(newUser);// Lưu vào database
+  }
   async findAll(getUserParamsDto: getUsersParamsDto, limit: number, page: number) {
     return [
       {
