@@ -14,11 +14,12 @@ export class PostController {
    
     
     @ApiOperation({
-      summary: 'Thêm bài viết mới',
+      summary: 'Thêm bài viết mới',// Tóm tắt mô tả cho API
+      description: 'Thêm bài viết mới',// Mô tả đầy đủ cho API
     })// Dùng để mô tả cho API 
     @ApiResponse({
-      status: 201,
-      description: 'Thêm bài viết mới thành công',
+      status: 201,// Mã trạng thái HTTP
+      description: 'Thêm bài viết mới thành công',// Mô tả cho phản hồi của API
     })// Dùng để mô tả cho phản hồi của API cho cả thực hiện đúng và sai 
   @Post()
   createPost(@Body() createPostDto: CreatePostDto) {
@@ -27,12 +28,12 @@ export class PostController {
 
 
   @ApiOperation({
-    summary: 'Lấy danh sách bài viết',
-    description: 'Lấy danh sách bài viết',
+    summary: 'Lấy danh sách bài viết',// Tóm tắt mô tả cho API
+    description: 'Lấy danh sách bài viết',// Mô tả đầy đủ cho API
   })// Dùng để mô tả cho API 
   @ApiResponse({
-    status: 200,
-    description: 'Lấy danh sách bài viết thành công',
+    status: 200,// Mã trạng thái HTTP
+    description: 'Lấy danh sách bài viết thành công',// Mô tả cho phản hồi của API
   })// Dùng để mô tả cho phản hồi của API cho cả thực hiện đúng và sai 
   @Get()
   findAll(
@@ -42,12 +43,12 @@ export class PostController {
   }
 
   @ApiOperation({
-    summary: 'Cập nhật bài viết',
-    description: 'Cập nhật bài viết',
+    summary: 'Cập nhật bài viết',// Tóm tắt mô tả cho API
+    description: 'Cập nhật bài viết',// Mô tả đầy đủ cho API
   })// Dùng để mô tả cho API 
   @ApiResponse({
-    status: 200,
-    description: 'Cập nhật bài viết thành công',
+    status: 200,// Mã trạng thái HTTP
+    description: 'Cập nhật bài viết thành công',// Mô tả cho phản hồi của API
   })// Dùng để mô tả cho phản hồi của API cho cả thực hiện đúng và sai 
   @Patch()
   async updatePost(@Body() updatePostDto: UpdatePostDto){
@@ -56,12 +57,12 @@ export class PostController {
   }
 
   @ApiOperation({
-    summary: 'Xóa bài viết',
-    description: 'Xóa bài viết',
+    summary: 'Xóa bài viết',// Tóm tắt mô tả cho API
+    description: 'Xóa bài viết',// Mô tả đầy đủ cho API
   })// Dùng để mô tả cho API 
   @ApiResponse({
-    status: 200,
-    description: 'Xóa bài viết thành công',
+    status: 200,// Mã trạng thái HTTP
+    description: 'Xóa bài viết thành công',// Mô tả cho phản hồi của API
   })// Dùng để mô tả cho phản hồi của API cho cả thực hiện đúng và sai 
   @Delete(':id')
   async removePost(@Param('id',ParseIntPipe) id: number){

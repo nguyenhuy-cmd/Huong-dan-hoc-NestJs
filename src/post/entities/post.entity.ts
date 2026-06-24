@@ -1,9 +1,10 @@
-import { Column, Entity, PrimaryGeneratedColumn, OneToOne, JoinColumn, ManyToOne } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, OneToOne, JoinColumn, ManyToOne, ManyToMany, JoinTable } from "typeorm";
 import { postType } from "../enums/postType.enum";
 import { postStatus } from "../enums/postStatus.enum";
 
 import { MetaOption } from "src/meta-options/entities/meta-options.entity";
 import { User } from "src/users/entities/user.entity";
+import { Tag } from "src/tags/entities/tag.entity";
 
 @Entity('post')
 export class Post {
@@ -73,11 +74,15 @@ export class Post {
     @JoinColumn({name: 'metaOptionsId'}) // JoinColumn là cột nối giữa 2 bảng
     metaOptions?: MetaOption; // OneToOne: 1 post chỉ có 1 metaOption
 
-    tags?: string[];
+    @ManyToOne(() => User, (user) => user.posts, {
+        eager: true// Giúp rút ngắn code khi gọi dữ liệu lên
+    }) // Nhiều post thuộc về 1 user
+    author: User; // TypeORM tự tạo cột "authorId" trong DB
 
-    @ManyToOne(() => User, (user) => user.posts, { nullable: false }) // Nhiều post thuộc về 1 user
-    user: User; // Cột khóa ngoại nối với bảng users
-
-    
+    @ManyToMany(()=> Tag)
+    @JoinTable({
+        
+    })
+    tags?: Tag[];
 
 }

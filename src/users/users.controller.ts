@@ -12,6 +12,14 @@ export class UsersController {
   // Chúng ta đang tiêm dịch vụ UsersService vào controller
   constructor(private readonly usersService: UsersService) {}
 
+  @ApiOperation({
+    summary: 'Thêm user',// Tóm tắt mô tả cho API
+    description: 'Thêm user',// Mô tả đầy đủ cho API
+  })
+  @ApiResponse({
+    status: 201,// Mã trạng thái HTTP
+    description: 'Thêm user thành công',// Mô tả cho phản hồi của API
+  })
   @Post()
   createUser(
     @Body() createUserDto: CreateUserDto,
@@ -22,12 +30,12 @@ export class UsersController {
 
   @Get()
   @ApiOperation({
-    summary: 'Get all users',
-    description: 'Get all users',
+    summary: 'Lấy danh sách tất cả users',// Tóm tắt mô tả cho API
+    description: 'Lấy danh sách tất cả users',// Mô tả đầy đủ cho API
   })// Dùng để mô tả cho API
   @ApiResponse({
-    status: 200,
-    description: 'Get all users',
+    status: 200,// Mã trạng thái HTTP
+    description: 'Lấy danh sách tất cả users',// Mô tả cho phản hồi của API
   })// Dùng để mô tả cho phản hồi của API
   @ApiQuery({
     name: 'limit', // Tên của tham số 
@@ -53,16 +61,40 @@ export class UsersController {
     return this.usersService.findAll(getUserParamsDto, limit, page);
   }
 
+  @ApiOperation({
+    summary: 'Lấy thông tin chi tiết của một user',// Tóm tắt mô tả cho API
+    description: 'Lấy thông tin chi tiết của một user',// Mô tả đầy đủ cho API
+  })
+  @ApiResponse({
+    status: 200,// Mã trạng thái HTTP
+    description: 'Lấy thông tin chi tiết của một user thành công',// Mô tả cho phản hồi của API
+  })
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(+id);
   }
 
+  @ApiOperation({
+    summary: 'Cập nhật thông tin chi tiết của một user',// Tóm tắt mô tả cho API
+    description: 'Cập nhật thông tin chi tiết của một user',// Mô tả đầy đủ cho API
+  })
+  @ApiResponse({
+    status: 200,// Mã trạng thái HTTP
+    description: 'Cập nhật thông tin chi tiết của một user thành công',// Mô tả cho phản hồi của API
+  })
   @Patch(':id')
   update(@Param('id') id: number, @Body() patchUserDto: patchUserDto) {
     return this.usersService.update(+id, patchUserDto);
   }
 
+  @ApiOperation({
+    summary: 'Xóa một user',// Tóm tắt mô tả cho API
+    description: 'Xóa một user',// Mô tả đầy đủ cho API
+  })
+  @ApiResponse({
+    status: 200,// Mã trạng thái HTTP
+    description: 'Xóa một user thành công',// Mô tả cho phản hồi của API
+  })
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.usersService.remove(+id);

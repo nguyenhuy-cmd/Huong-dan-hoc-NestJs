@@ -45,13 +45,19 @@ export class UsersService {
   }
 
   async findOne(id: number) {
-    return [
-      {
-        id: 1,
-        firsName:'Nhi',
-        email: 'nhi@gmail.com'
-      }
-    ];
+    // const user = this.userRepository.findOne({where:{id}});
+    // if(!user){
+    //   throw new BadRequestException('Không tìm thấy người dùng');
+    // }
+    // return user;
+  }
+    // Thêm hàm này vào trong file users.service.ts của bạn nhé
+  async findOneById(id: number) {
+    const user =  await this.userRepository.findOneBy({ id });
+    if(!user){
+      throw new BadRequestException('Không tìm thấy người dùng');
+    }
+    return user;
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
