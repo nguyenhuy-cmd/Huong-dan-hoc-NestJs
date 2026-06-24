@@ -1,7 +1,7 @@
 import { IsArray, IsEnum, IsISO8601, IsJSON, IsNotEmpty, IsOptional, IsString, IsUrl, Matches, MinLength, ValidateNested } from "class-validator";
 import { postStatus } from "../enums/postStatus.enum";
 import { postType } from "../enums/postType.enum";
-import { CreatePostMetaOptionsDto } from "./create-post-meta-options.dto";
+import { CreatePostMetaOptionsDto } from "../../meta-options/dto/create-post-meta-options.dto";
 import { Type } from "class-transformer";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
@@ -86,40 +86,20 @@ export class CreatePostDto {
     tags?:string[];
 
     @ApiPropertyOptional({
-        description: 'Meta options bài viết',
-        example: [
-            {
-                key: 'meta1',
-                value: 'value1'
+        type:'object',
+        // @ApiPropertyOptional đã tự động là optional, không cần required: false
+        properties: {
+            metaValue: {
+                type: 'string', // JSON được truyền dưới dạng string
+                description: 'MetaValue của meta options bài viết',
+                example: '{"sidebarEnabled": true}',
             },
-            {
-                key: 'meta2',
-                value: 'value2'
-            }
-        ],
-        required: false, // Dùng để chỉ định thuộc tính có bắt buộc hay không, nếu bằng false thì thuộc tính sẽ là không bắt buộc
-        type: 'array',
-        items: {
-            type: 'object',
-            properties: {
-                key: {
-                    type: 'string',
-                    description: 'Key của meta options',
-                    example: 'meta1',
-                },
-                value: {
-                    type: 'string',
-                    description: 'Value của meta options',
-                    example: 'value1',
-                }
-            }
         }
     })// Dùng để xuất hiện trong Swagger UI và là thuộc tính không bắt buộc
     @IsOptional({message: 'Meta options có thể để trống'})
-    @IsArray({message: 'Meta options phải là mảng'})
     @ValidateNested({ each: true })
     @Type(() => CreatePostMetaOptionsDto)
-    metaOptions?: CreatePostMetaOptionsDto[]
+    metaOptions?: CreatePostMetaOptionsDto; // Optional: có thể không truyền lên
     
 }
 

@@ -1,20 +1,22 @@
-import { Module, Post } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from '../users/users.module';
 import { PostModule } from '../post/post.module';
 import { AuthModule } from '../auth/auth.module';
+import { TagsModule } from '../tags/tags.module';
+import { MetaOptionsModule } from '../meta-options/meta-options.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
 
 @Module({
-  imports: [UsersModule, PostModule, AuthModule,
+  imports: [UsersModule, PostModule, AuthModule, TagsModule, MetaOptionsModule,
     TypeOrmModule.forRootAsync({
       imports: [],// Tùy chọn: Import các module khác nếu cần tiêm ConfigModule
       inject: [],// Tùy chọn: Injection các Service khác
       useFactory: () => ({// useFactory được tiêm vào ConfigModule thông qua ConfigService 
         type: 'postgres',   // Hệ quản trị cơ sở dữ liệu
-        entities: [User, Post], // Các Entity (Bảng) được nạp vào hệ thống
+        entities: [User], // Các Entity (Bảng) được nạp vào hệ thống
         host: 'localhost', // Chạy dưới máy local là localhost
         port: 5432,   // Cổng mặc định của PostgreSQL
         username: 'postgres', // Tài khoản mặc định lúc cài đặt
@@ -28,4 +30,4 @@ import { User } from 'src/users/entities/user.entity';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

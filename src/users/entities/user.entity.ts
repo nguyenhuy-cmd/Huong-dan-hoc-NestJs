@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Post } from "src/post/entities/post.entity";
 
 @Entity('users')
 export class User {
@@ -32,4 +33,7 @@ export class User {
         nullable: false // Không được để trống
     })
     password: string;
+
+    @OneToMany(() => Post, (post) => post.user) // 1 user có nhiều posts
+    posts: Post[]; // Danh sách các post của user
 }

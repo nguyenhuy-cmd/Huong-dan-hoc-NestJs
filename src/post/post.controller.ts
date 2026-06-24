@@ -22,30 +22,49 @@ export class PostController {
     })// Dùng để mô tả cho phản hồi của API cho cả thực hiện đúng và sai 
   @Post()
   createPost(@Body() createPostDto: CreatePostDto) {
-    console.log(createPostDto);
-
+    return this.postService.create(createPostDto);
   }
 
+
+  @ApiOperation({
+    summary: 'Lấy danh sách bài viết',
+    description: 'Lấy danh sách bài viết',
+  })// Dùng để mô tả cho API 
+  @ApiResponse({
+    status: 200,
+    description: 'Lấy danh sách bài viết thành công',
+  })// Dùng để mô tả cho phản hồi của API cho cả thực hiện đúng và sai 
   @Get()
   findAll(
     @Query('userId', ParseIntPipe) userId: number,
-    @Query('limit', ParseIntPipe, new DefaultValuePipe(10)) limit: number,
-    @Query('page', ParseIntPipe, new DefaultValuePipe(1)) page: number,
   ) {
-    return this.postService.findAll(userId, limit, page);
+    return this.postService.findAll(userId);
   }
 
   @ApiOperation({
     summary: 'Cập nhật bài viết',
     description: 'Cập nhật bài viết',
-  })
+  })// Dùng để mô tả cho API 
   @ApiResponse({
     status: 200,
     description: 'Cập nhật bài viết thành công',
-  })
+  })// Dùng để mô tả cho phản hồi của API cho cả thực hiện đúng và sai 
   @Patch()
   async updatePost(@Body() updatePostDto: UpdatePostDto){
     console.log(updatePostDto);
     
+  }
+
+  @ApiOperation({
+    summary: 'Xóa bài viết',
+    description: 'Xóa bài viết',
+  })// Dùng để mô tả cho API 
+  @ApiResponse({
+    status: 200,
+    description: 'Xóa bài viết thành công',
+  })// Dùng để mô tả cho phản hồi của API cho cả thực hiện đúng và sai 
+  @Delete(':id')
+  async removePost(@Param('id',ParseIntPipe) id: number){
+    return this.postService.remove(id);
   }
 }

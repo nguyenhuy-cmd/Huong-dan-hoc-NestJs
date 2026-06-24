@@ -1,6 +1,9 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, OneToOne, JoinColumn, ManyToOne } from "typeorm";
 import { postType } from "../enums/postType.enum";
 import { postStatus } from "../enums/postStatus.enum";
+
+import { MetaOption } from "src/meta-options/entities/meta-options.entity";
+import { User } from "src/users/entities/user.entity";
 
 @Entity('post')
 export class Post {
@@ -63,18 +66,18 @@ export class Post {
     })
     publishOn?: Date;
 
-    @Column({
-        type: 'varchar',
-        length: 255,
-        nullable: true // Được để trống
-    })
+    @OneToOne(() => MetaOption, (metaOption) => metaOption.post,{
+        cascade: true, // cascade: true, Khi tạo post thì tạo luôn metaOption và chỉ sử dụng trong mối quan hệ 
+        eager: true// Giúp rút ngắn code khi gọi dữ liệu lên
+    }) // OneToOne là mối quan hệ 1-1
+    @JoinColumn({name: 'metaOptionsId'}) // JoinColumn là cột nối giữa 2 bảng
+    metaOptions?: MetaOption; // OneToOne: 1 post chỉ có 1 metaOption
+
     tags?: string[];
 
-    @Column({
-        type: 'varchar',
-        length: 255,
-        nullable: true // Được để trống
-    })
-    metaOptions?: string[];
+    @ManyToOne(() => User, (user) => user.posts, { nullable: false }) // Nhiều post thuộc về 1 user
+    user: User; // Cột khóa ngoại nối với bảng users
+
+    
 
 }

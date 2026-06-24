@@ -3,9 +3,11 @@ import { PostService } from './post.service';
 import { PostController } from './post.controller';
 import { Post } from './entities/post.entity';
 import { UsersModule } from 'src/users/users.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { MetaOption } from 'src/meta-options/entities/meta-options.entity';
 
 @Module({
-  imports: [UsersModule],// nhận service UsersService để sử dụng
+  imports: [UsersModule, TypeOrmModule.forFeature([Post, MetaOption])],// nhận service UsersService để sử dụng
   controllers: [PostController],
   providers: [PostService],
 })
