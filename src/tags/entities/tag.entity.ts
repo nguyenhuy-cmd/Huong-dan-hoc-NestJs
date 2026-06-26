@@ -1,5 +1,6 @@
+import { Post } from "src/post/entities/post.entity";
 import { CreateAuthDto } from "src/auth/dto/create-auth.dto";
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, ManyToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity('tags')
 export class Tag {
@@ -43,6 +44,10 @@ export class Tag {
     })
     featuredImageUrl?: string
     
+    @ManyToMany(() => Post, (post) => post.tags,{
+        onDelete: 'CASCADE' // Khi xóa tag thì xóa luôn post            
+    })
+    post: Post[];
    
     @CreateDateColumn()// Cột tự động tạo khi tạo    
     createDate: Date;// 

@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Tag } from "./entities/tag.entity";
 import { In, Repository } from "typeorm";
@@ -21,7 +21,54 @@ export class TagsService {
   }
 
   async findManyTags(tags: number[]){// Lấy danh sách các tags từ id
-    const existing = await this.tagRepository.find({ where: { id: In(tags) } });// In là hàm của typeorm dùng để lấy danh sách các return existing;
+    const existing = await this.tagRepository.find({ where: { id: In(tags) } });// In sễ lấy tất cả tag có id trong mảng tags truyền vào
+    if (!existing) {
+      throw new NotFoundException("Không tìm thấy tag");
+    } 
     return existing;
+  }
+
+  async delete(id: number){
+
+    const tags = await this.tagRepository.findOneBy({id})
+    if(!tags){
+      throw new NotFoundException("Không tìm thấy tag");
+    }
+
+    const existing = await this.tagRepository.delete(id);
+    return {message: "Xóa tag thành công",
+      delete: existing,
+      id
+    }
+  }
+
+  async softDelete(id: number){
+
+    const tags = await this.tagRepository.findOneBy({id})
+    if(!tags){
+      throw new NotFoundException("Không tìm thấy tag");
+    }
+
+    const existing = await this.tagRepository.softDelete(id);
+    return {message: "Xóa mềm tag thành công",
+      delete: existing,
+      id
+    }
+  }
+
+
+  // khôi phục những thứ đã bị xóa mềm 
+  async recover(id: number){
+
+    const tags = await this.tagRepository.findOneBy({id})
+    if(!tags){
+      throw new NotFoundException("Không tìm thấy tag");
+    }
+
+    const existing = await this.tagRepository.restore(tags);
+    return {message: "Khôi phục tag thành công",
+      recover: existing,
+      id
+    }
   }
 }

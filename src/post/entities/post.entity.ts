@@ -79,10 +79,11 @@ export class Post {
     }) // Nhiều post thuộc về 1 user
     author: User; // TypeORM tự tạo cột "authorId" trong DB
 
-    @ManyToMany(()=> Tag)
-    @JoinTable({
-        
+    @ManyToMany(()=> Tag,{
+        cascade: true, // cascade: true, Khi tạo post thì tạo luôn tag và chỉ sử dụng trong mối quan hệ 
+        eager: true// Giúp rút ngắn code khi gọi dữ liệu lên
     })
-    tags?: Tag[];
+    @JoinTable()// JoinTable là bảng nối giữa 2 bảng
+    tags?: Tag[]; // Nhiều post có thể có nhiều tag
 
 }

@@ -79,7 +79,7 @@ export class CreatePostDto {
         description: 'Tags bài viết',// description dùng để mô tả cho Swagger UI
         example: [1, 2, 3] // example là dữ liệu mẫu cho Swagger UI
     })// Dùng để xuất hiện trong Swagger UI và là thuộc tính không bắt buộc
-    @IsInt({each: true, message: 'Tags phải là mảng số' })
+    @IsInt({each: true, message: 'Tags phải là mảng số' })// each dùng để validate từng phần tử trong mảng
     @IsOptional()
     @IsArray()
     tags?:number[];

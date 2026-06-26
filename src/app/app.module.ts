@@ -8,11 +8,15 @@ import { TagsModule } from '../tags/tags.module';
 import { MetaOptionsModule } from '../meta-options/meta-options.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [UsersModule, PostModule, AuthModule, TagsModule, MetaOptionsModule,
+    ConfigModule.forRoot({
+      isGlobal: true// Đăng kí ConfigModule trên toàn ứng dụng
+    }),// Đăng kí ConfigModule
     TypeOrmModule.forRootAsync({
-      imports: [],// Tùy chọn: Import các module khác nếu cần tiêm ConfigModule
+      imports: [ConfigModule],// Tùy chọn: Import các module khác nếu cần tiêm ConfigModule
       inject: [],// Tùy chọn: Injection các Service khác
       useFactory: () => ({// useFactory được tiêm vào ConfigModule thông qua ConfigService 
         type: 'postgres',   // Hệ quản trị cơ sở dữ liệu

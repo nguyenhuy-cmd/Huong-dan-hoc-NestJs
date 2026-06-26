@@ -7,6 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { MetaOption } from 'src/meta-options/entities/meta-options.entity';
 import { Repository } from 'typeorm';
 import { TagsService } from 'src/tags/tags.service';
+import { PatchPostDto } from './dto/patch-post.dto';
 
 @Injectable()
 export class PostService {
@@ -63,20 +64,14 @@ export class PostService {
     const post = await this.postRepository.find({
       relations: { // để thêm các cột liên quan trong database vào khi query
         metaOptions: true, // Thêm cột metaOptions vào khi query
-        author: true // Thêm cột tác giả vào khi query
+        author: true, // Thêm cột tác giả vào khi query
+        tags: true // Thêm cột tags vào khi query
       }
     })
 
     return post;
   }
 
-  async findOne(id: number) {
-    return ''
-  }
-
-  async update(id: number, updatePostDto: UpdatePostDto) {
-    return `This action updates a #${id} post`;
-  }
   
   async remove(id: number) {
     const post = await this.postRepository.findOneBy({ id });
@@ -90,5 +85,23 @@ export class PostService {
       id
      }
      // và chúng ta cung có thể tìm bài viết bằng meta-options qua 1 phương thức query 
+  }
+
+  async update(patchPostDto: PatchPostDto, ){
+    const tags = await this.tagService.findManyTags(patchPostDto.tags ?? []);
+    if (!tags) {
+      throw new NotFoundException("Không tìm thấy tag");
+    }   
+
+    const post = await this.postRepository.findOneBy({id: patchPostDto.id})
+    if (!post) {
+      throw new NotFoundException("Không tìm thấy bài viết");
+    }
+
+    post.tags = tags; // gán tags của post là tags tìm được từ id
+
+    return await this.postRepository.save(post);
+    
+    
   }
 }

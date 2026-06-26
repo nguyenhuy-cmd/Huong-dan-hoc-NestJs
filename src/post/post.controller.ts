@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe, DefaultValuePipe } from '@nestjs/common';
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
-import { UpdatePostDto } from './dto/patch-post.dto';
+import { PatchPostDto } from './dto/patch-post.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @Controller('post')
@@ -51,9 +51,8 @@ export class PostController {
     description: 'Cập nhật bài viết thành công',// Mô tả cho phản hồi của API
   })// Dùng để mô tả cho phản hồi của API cho cả thực hiện đúng và sai 
   @Patch()
-  async updatePost(@Body() updatePostDto: UpdatePostDto){
-    console.log(updatePostDto);
-    
+  async updatePost(@Body() patchPostDto: PatchPostDto){
+    return await this.postService.update(patchPostDto);
   }
 
   @ApiOperation({
