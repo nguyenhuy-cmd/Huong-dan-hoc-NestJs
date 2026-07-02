@@ -8,26 +8,32 @@ import { TagsModule } from '../tags/tags.module';
 import { MetaOptionsModule } from '../meta-options/meta-options.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import appConfig from 'src/config/app.config';
+import databaseConfig from 'src/config/database.config';
+
+const ENV = process.env.NODE_ENV;// Lấy ra trạng thái môi trường hiện tại mà ứng dụng đang chạy
 
 @Module({
   imports: [UsersModule, PostModule, AuthModule, TagsModule, MetaOptionsModule,
     ConfigModule.forRoot({
-      isGlobal: true// Đăng kí ConfigModule trên toàn ứng dụng
+      isGlobal: true,// Đăng kí ConfigModule trên toàn ứng dụng
+      envFilePath: !ENV ? '.env' : `.env.${ENV}`,// Toán tử 3 ngôi: nết biến env không có giá trị thì chọn env còn nếu có giá trị thì chọn .env.development 
+      load:[appConfig, databaseConfig], // nạp tệp cấu hình vào 
     }),// Đăng kí ConfigModule
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],// Tùy chọn: Import các module khác nếu cần tiêm ConfigModule
-      inject: [],// Tùy chọn: Injection các Service khác
-      useFactory: () => ({// useFactory được tiêm vào ConfigModule thông qua ConfigService 
+      inject: [ConfigService],// Tùy chọn: Injection các Service khác: ConfigService
+      useFactory: (configService: ConfigService) => ({// useFactory được tiêm vào ConfigModule thông qua ConfigService 
         type: 'postgres',   // Hệ quản trị cơ sở dữ liệu
         entities: [User], // Các Entity (Bảng) được nạp vào hệ thống
-        host: 'localhost', // Chạy dưới máy local là localhost
-        port: 5432,   // Cổng mặc định của PostgreSQL
-        username: 'postgres', // Tài khoản mặc định lúc cài đặt
-        password: 'Nguyenanhhuy2003', // Mật khẩu bạn đã đặt lúc cài PostgreSQL
-        database: 'nestjspostgresdb', // Tên database bạn đã tạo trong PostgreSQL
-        autoLoadEntities: true, // Tự động quét và nạp các Entity (Bảng) vào hệ thống
-        synchronize: true,// Tự động tạo bảng dưới Database dựa trên code Entity (Chỉ bật khi code ở local)
+        host: configService.get('database.host'), // Chạy dưới máy local là localhost
+        port: +configService.get('database.post'),   //Dấu + là thay đổitừ chữ thành số ,Cổng mặc định của PostgreSQL
+        username: configService.get('database.user'), // Tài khoản mặc định lúc cài đặt
+        password: configService.get('database.password'), // Mật khẩu bạn đã đặt lúc cài PostgreSQL
+        database: configService.get('database.name'), // Tên database bạn đã tạo trong PostgreSQL
+        autoLoadEntities: configService.get('database.autoLoadEntities'), // Tự động quét và nạp các Entity (Bảng) vào hệ thống
+        synchronize: configService.get('database.synchronize'),// Tự động tạo bảng dưới Database dựa trên code Entity (Chỉ bật khi code ở local)
       }),
     }),
   ],
