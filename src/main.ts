@@ -11,7 +11,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true,// bất kì thuộc tính nào không có trong DTO thì sẽ bị loại bỏ ,
     forbidNonWhitelisted:true, // nếu có thuộc tính không có trong DTO thì ném về lỗi 
-    transform:true, // tự động chuyển dữ liệu input theo DTO  
+    transform:true, // tự động chuyển dữ liệu input theo DTO 
   }
   ));
 

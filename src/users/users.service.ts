@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, RequestTimeoutException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { getUsersParamsDto } from './dto/get-users-param.dto';
@@ -22,9 +22,19 @@ export class UsersService {
   ){}
 
   async create(createUserDto: CreateUserDto) {
-    const user = await this.userRepository.findOne({where:{email: createUserDto.email}});
+    const user = undefined;
+    try{// Dùng để bắt lỗi database
+    await this.userRepository.findOne({where:{email: createUserDto.email}});
     if(user){
       throw new BadRequestException('Email đã tồn tại');
+    }}catch(error){
+      // lưa chi tiết ngoại lệ vào cơ sở dữ liệu của bạn
+      throw new RequestTimeoutException((
+        'Không thể xử lí yêu cầu của bạn vào lúc này'),
+        {
+          description: 'Lỗi kết nối tới cơ sở dữ liệu'
+        }
+      )
     }
     const newUser = this.userRepository.create(createUserDto);// tạo 1 đối tượng User mới từ CreateUserDto
     return this.userRepository.save(newUser);// Lưu vào database

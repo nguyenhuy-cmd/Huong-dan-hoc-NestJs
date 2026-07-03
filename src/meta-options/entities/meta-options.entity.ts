@@ -20,7 +20,7 @@ export class MetaOption {
     @UpdateDateColumn()// Cột tự động cập nhật khi update
     updateAt: Date;
 
-     
+    
     @OneToOne(() => Post, (post) => post.metaOptions,{
         onDelete: 'CASCADE',// Nếu có post bị xóa thì metaOption cũng bị xóa theo
     })

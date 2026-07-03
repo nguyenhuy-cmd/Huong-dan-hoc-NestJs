@@ -11,6 +11,7 @@ import { User } from 'src/users/entities/user.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import appConfig from 'src/config/app.config';
 import databaseConfig from 'src/config/database.config';
+import environValidation from 'src/config/environ.validation';
 
 const ENV = process.env.NODE_ENV;// Lấy ra trạng thái môi trường hiện tại mà ứng dụng đang chạy
 
@@ -20,6 +21,7 @@ const ENV = process.env.NODE_ENV;// Lấy ra trạng thái môi trường hiện
       isGlobal: true,// Đăng kí ConfigModule trên toàn ứng dụng
       envFilePath: !ENV ? '.env' : `.env.${ENV}`,// Toán tử 3 ngôi: nết biến env không có giá trị thì chọn env còn nếu có giá trị thì chọn .env.development 
       load:[appConfig, databaseConfig], // nạp tệp cấu hình vào 
+      validationSchema: environValidation,// Sử dụng Joi schema để kiểm tra env variables trước khi app chạy
     }),// Đăng kí ConfigModule
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],// Tùy chọn: Import các module khác nếu cần tiêm ConfigModule
