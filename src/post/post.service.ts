@@ -1,4 +1,5 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { error } from 'console';
+import { Injectable, NotFoundException, RequestTimeoutException } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { Post } from './entities/post.entity';
@@ -83,25 +84,56 @@ export class PostService {
     return { message: "Xóa bài viết thành công",
       delete: true,
       id
-     }
+    }
      // và chúng ta cung có thể tìm bài viết bằng meta-options qua 1 phương thức query 
   }
 
-  async update(patchPostDto: PatchPostDto, ){
-    const tags = await this.tagService.findManyTags(patchPostDto.tags ?? []);
-    if (!tags) {
-      throw new NotFoundException("Không tìm thấy tag");
-    }   
+  async update(patchPostDto: PatchPostDto) {
+    // Khai báo biến bên ngoài try để dùng được ở cuối hàm
+    let tags: any;
+    let post: any;
 
-    const post = await this.postRepository.findOneBy({id: patchPostDto.id})
-    if (!post) {
-      throw new NotFoundException("Không tìm thấy bài viết");
+    // --- Bước 1: Tìm tags, chỉ bắt lỗi database (không bắt NotFoundException) ---
+    try {
+      tags = await this.tagService.findManyTags(patchPostDto.tags ?? []);
+    } catch (error) {
+      // Chỉ vào đây khi database lỗi, không phải khi tags không tồn tại
+      throw new RequestTimeoutException(
+        'Không thể xử lí yêu cầu của bạn vào lúc này',
+        { description: 'Lỗi kết nối tới cơ sở dữ liệu' }
+      );
+    }
+    // Kiểm tra business logic SAU try-catch
+    if (!tags) {
+      throw new NotFoundException('Không tìm thấy tag');
     }
 
+    // --- Bước 2: Tìm post, chỉ bắt lỗi database ---
+    try {
+      post = await this.postRepository.findOneBy({ id: patchPostDto.id });
+    } catch (error) {
+      // Chỉ vào đây khi database lỗi
+      throw new RequestTimeoutException(
+        'Không thể xử lí yêu cầu của bạn vào lúc này',
+        { description: 'Lỗi kết nối tới cơ sở dữ liệu' }
+      );
+    }
+    // Kiểm tra business logic SAU try-catch
+    if (!post) {
+      throw new NotFoundException('Không tìm thấy bài viết');
+    }
+
+    // --- Bước 3: Cập nhật và lưu ---
     post.tags = tags; // gán tags của post là tags tìm được từ id
 
-    return await this.postRepository.save(post);
-    
-    
+    try{
+      await this.postRepository.save(post)
+    }catch(error){
+      throw new RequestTimeoutException(
+        'Không thể xử lí yêu cầu của bạn vào lúc này',
+        { description: 'Lỗi kết nối tới cơ sở dữ liệu' }
+      );
+    }
+    return post;
   }
 }

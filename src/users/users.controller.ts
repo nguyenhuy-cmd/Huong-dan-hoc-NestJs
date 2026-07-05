@@ -5,6 +5,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { patchUserDto } from './dto/patch-user.dto';
 import { getUsersParamsDto } from './dto/get-users-param.dto';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { CreateManyUsersDto} from './dto/create-many-user.dto';
 
 @Controller('users')
 @ApiTags('users') // Thêm thẻ của API cho toàn bộ controller
@@ -26,6 +27,22 @@ export class UsersController {
     
   ) {
     return this.usersService.create(createUserDto);
+  }
+
+  @ApiOperation({
+    summary: 'Thêm nhiều user',// Tóm tắt mô tả cho API
+    description: 'Thêm nhiều user',// Mô tả đầy đủ cho API
+  })
+  @ApiResponse({
+    status: 201,// Mã trạng thái HTTP
+    description: 'Thêm nhiều user thành công',// Mô tả cho phản hồi của API
+  })
+  @Post('create-many')
+  createManyUser(
+    @Body() createManyUsersDto: CreateManyUsersDto,
+    
+  ) {
+    return this.usersService.createMany(createManyUsersDto);
   }
 
   @Get()
