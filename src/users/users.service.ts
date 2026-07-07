@@ -11,7 +11,9 @@ import profileConfig from './config/profile.config';
 import { error } from 'console';
 import { DataSource } from 'typeorm';
 import { UsersCreateManyServiceTs } from './users-create-many.service';
+import { CreateUserService } from './create-user.service';
 import { CreateManyUsersDto } from './dto/create-many-user.dto';
+import { FindOneUserByEmailProvider } from './providers/find-one-user-by-email.provider';
 @Injectable()
 export class UsersService {
   constructor(
@@ -30,27 +32,16 @@ export class UsersService {
     // Tiêm userCreateMany
     private readonly usersCreateManyServiceTs: UsersCreateManyServiceTs,
 
+    private readonly createUserService: CreateUserService,// Inject CreateUserService (không phải CreateUserDto)
+
+    private readonly findOneUserByEmailProvider: FindOneUserByEmailProvider,
   ){}
 
+  // Tạo user mới
   async create(createUserDto: CreateUserDto) {
-    const user = undefined;
-    try{// Dùng để bắt lỗi database
-    await this.userRepository.findOne({where:{email: createUserDto.email}});
-    if(user){
-      throw new BadRequestException('Email đã tồn tại');
-    }}catch(error){
-      // lưa chi tiết ngoại lệ vào cơ sở dữ liệu của bạn
-      throw new RequestTimeoutException((
-        'Không thể xử lí yêu cầu của bạn vào lúc này'),
-        {
-          description: 'Lỗi kết nối tới cơ sở dữ liệu'
-        }
-      )
-    }
-    
-    const newUser = this.userRepository.create(createUserDto);// tạo 1 đối tượng User mới từ CreateUserDto
-    return this.userRepository.save(newUser);// Lưu vào database
+     return this.createUserService.create(createUserDto)// Gọi method create của CreateUserService
   }
+
   async findAll(
     getUserParamsDto: getUsersParamsDto, 
     limit: number, 
@@ -115,5 +106,9 @@ try{// Dùng để bắt lỗi database
   async createMany(createManyUsersDto: CreateManyUsersDto){
   return await this.usersCreateManyServiceTs.createMany(createManyUsersDto);// lấy 
 
+  }
+
+  async findOneByEmail(email: string){
+    return await this.findOneUserByEmailProvider.findOneByEmail(email)
   }
 }

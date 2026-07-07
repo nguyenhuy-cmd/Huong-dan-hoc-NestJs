@@ -1,3 +1,5 @@
+import { SignInProvider } from './providers/sign-in.provider';
+import { SignInDto } from './dto/signin.dto';
 import { Injectable } from '@nestjs/common';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
@@ -6,20 +8,14 @@ import { UsersService } from 'src/users/users.service';
 @Injectable()
 export class AuthService {
   constructor(
-    // Tiêm UsersService để sử dụng
-    private readonly usersService: UsersService
+    private readonly usersService: UsersService,// Inject trực tiếp, không cần forwardRef vì không còn circular dependency
+
+    private readonly signInProvider: SignInProvider// Inject SignInProvider để xử lý đăng nhập
   ) {}
 
 
-  async login(email: string, password: string) {
-    const user = await this.usersService.findByEmail(email);
-    if (!user) {
-      return 'User not found';
-    }
-    if (user.password !== password) {
-      return 'Invalid password';
-    }
-    return 'Login success';
+  async signIn(signInDto: SignInDto) {
+     return await this.signInProvider.signIn(signInDto)
   }
   create(createAuthDto: CreateAuthDto) {
     return 'This action adds a new auth';

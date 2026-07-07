@@ -13,6 +13,11 @@ export class CreateUserDto {
   @MaxLength(100,{message:'Email phải nhỏ hơn hoặc bằng 100'})
   email: string;
 
+  @IsString({ message: 'Mật khẩu phải là chuỗi' })// Validator: kiểm tra password phải là string
+  @IsNotEmpty({ message: 'Mật khẩu không được để trống' })
+  @MinLength(8,{message:'Mật khẩu phải lớn hơn hoặc bằng 8 ký tự'})
+  password: string;// Thêm field password để hash trước khi lưu vào database
+
   @IsInt({ message: 'Tuổi phải là số nguyên' })
   @IsNotEmpty({ message: 'Tuổi không được để trống' })
   @MinLength(1,{message:'Tuổi phải lớn hơn hoặc bằng 1'})
