@@ -3,6 +3,7 @@ import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { PatchPostDto } from './dto/patch-post.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { GetPostDto } from './dto/get-post.dto';
 
 @Controller('post')
 @ApiTags('post') // Thêm thẻ của API cho toàn bộ controller
@@ -35,11 +36,12 @@ export class PostController {
     status: 200,// Mã trạng thái HTTP
     description: 'Lấy danh sách bài viết thành công',// Mô tả cho phản hồi của API
   })// Dùng để mô tả cho phản hồi của API cho cả thực hiện đúng và sai 
-  @Get()
+  @Get()// Bỏ ':userId?'
   findAll(
-    @Query('userId', ParseIntPipe) userId: number,
+    @Query('userId', new ParseIntPipe({ optional: true })) userId: number,// optional: true để userId có thể không truyền
+    @Query() postQuery: GetPostDto,
   ) {
-    return this.postService.findAll(userId);
+    return this.postService.findAll(userId, postQuery);
   }
 
   @ApiOperation({

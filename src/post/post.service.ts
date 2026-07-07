@@ -1,5 +1,5 @@
-import { error } from 'console';
-import { Injectable, NotFoundException, RequestTimeoutException } from '@nestjs/common';
+import { PaginationService } from '../common/pagination/pagination.service';// Import từ src/common/pagination/ (không phải src/pagination/)
+import { Injectable, NotFoundException, RequestTimeoutException } from '@nestjs/common'; // Xóa Post khỏi import @nestjs/common (Post là entity, không phải decorator)
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { Post } from './entities/post.entity';
@@ -9,6 +9,8 @@ import { MetaOption } from 'src/meta-options/entities/meta-options.entity';
 import { Repository } from 'typeorm';
 import { TagsService } from 'src/tags/tags.service';
 import { PatchPostDto } from './dto/patch-post.dto';
+import { GetPostDto } from './dto/get-post.dto';
+import { Paginated } from 'src/common/pagination/interface/paginated.interface';
 
 @Injectable()
 export class PostService {
@@ -24,6 +26,9 @@ export class PostService {
 
     // tiêm dịch vụ tagsService để sử dụng 
     private readonly tagService: TagsService,
+
+    
+    private readonly paginationService: PaginationService,
   ) { }
 
   // async và await dùng để xử lý bất đồng bộ là có thể trực tiếp tiêm 1 đối tượng cấu hình 
@@ -57,19 +62,12 @@ export class PostService {
     return await this.postRepository.save(post); // lưu post xuống database
   }
 
-  async findAll(userId: number) {
-
-
-    const user = await this.usersService.findOne(userId);
-
-    const post = await this.postRepository.find({
-      relations: { // để thêm các cột liên quan trong database vào khi query
-        metaOptions: true, // Thêm cột metaOptions vào khi query
-        author: true, // Thêm cột tác giả vào khi query
-        tags: true // Thêm cột tags vào khi query
-      }
-    })
-
+  async findAll(userId: number,postQuery: GetPostDto)
+  :Promise<Paginated<Post>> {
+    const post = await this.paginationService.paginateQuery({
+      limit: postQuery.limit,
+      page: postQuery.page
+    }, this.postRepository)// Sửa typo: postsRepository → postRepository
     return post;
   }
 

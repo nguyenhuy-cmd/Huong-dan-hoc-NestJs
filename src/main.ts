@@ -12,6 +12,9 @@ async function bootstrap() {
     whitelist: true,// bất kì thuộc tính nào không có trong DTO thì sẽ bị loại bỏ ,
     forbidNonWhitelisted:true, // nếu có thuộc tính không có trong DTO thì ném về lỗi 
     transform:true, // tự động chuyển dữ liệu input theo DTO 
+    transformOptions: {
+      enableImplicitConversion:true// liểu chuyển đổi ngầm như từ chuỗi thành số
+    }
   }
   ));
 
@@ -26,7 +29,8 @@ async function bootstrap() {
     .addTag('cats') // Thẻ của API
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('api', app, document);//Hai dòng code này dùng để tự động tạo ra một trang giao diện (UI) 
+  // hiển thị đầy đủ danh sách các API của hệ thống NestJS, giúp bạn (hoặc Frontend) vào xem, bấm test thử và đọc tài liệu API cực kỳ dễ dàng.
 
 
 
