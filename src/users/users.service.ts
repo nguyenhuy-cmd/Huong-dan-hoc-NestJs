@@ -8,7 +8,6 @@ import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import type { ConfigType } from '@nestjs/config';
 import profileConfig from './config/profile.config';
-import { error } from 'console';
 import { DataSource } from 'typeorm';
 import { UsersCreateManyServiceTs } from './users-create-many.service';
 import { CreateUserService } from './create-user.service';
@@ -46,17 +45,14 @@ export class UsersService {
     getUserParamsDto: getUsersParamsDto, 
     limit: number, 
     page: number) {
-      // ném ngoại lệ tùy chỉnh
+      // Ném ngoại lệ tùy chỉnh (API không tồn tại, đã bị di chuyển)
       throw new HttpException({
         status: HttpStatus.MOVED_PERMANENTLY,
         error: 'Đường dẫn API không tồn tại'
       },
-         HttpStatus.MOVED_PERMANENTLY 
-    ),
-    {// tham số tùy chọn và không gửi cho người dùng
-      cause: new Error(),
-      description: 'Xảy ra do đường dẫn API đã bị di chuyển vĩnh viễn'
-    }
+        HttpStatus.MOVED_PERMANENTLY,
+        { cause: new Error(), description: 'Đường dẫn API đã bị di chuyển vĩnh viễn' }
+      );
   }
 
   async findByEmail(email: string) {
@@ -75,24 +71,21 @@ export class UsersService {
     // }
     // return user;
   }
-    // Thêm hàm này vào trong file users.service.ts của bạn nhé
+  // Tìm user bằng id
   async findOneById(id: number) {
-    const user = undefined;
-try{// Dùng để bắt lỗi database
-    const user =  await this.userRepository.findOneBy({ id });
-    if(!user){
-      throw new BadRequestException('Không tìm thấy người dùng');
+    try {
+      const user = await this.userRepository.findOneBy({ id });// Tìm user trong database theo id
+      if (!user) {
+        throw new BadRequestException('Không tìm thấy người dùng');// Nếu không có → báo lỗi
+      }
+      return user;// Trả về user tìm được
+    } catch (error) {
+      // Lỗi khác (database timeout, disconnect...)
+      throw new RequestTimeoutException(
+        'Không thể xử lí yêu cầu của bạn vào lúc này',
+        { description: 'Lỗi kết nối tới cơ sở dữ liệu' }
+      );
     }
-    } catch(error){
-      // lưa chi tiết ngoại lệ vào cơ sở dữ liệu của bạn
-      throw new RequestTimeoutException((
-        'Không thể xử lí yêu cầu của bạn vào lúc này'),
-        {
-          description: 'Lỗi kết nối tới cơ sở dữ liệu'
-        }
-      )
-    }
-    return user;
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {

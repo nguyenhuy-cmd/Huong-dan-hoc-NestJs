@@ -12,6 +12,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import appConfig from 'src/config/app.config';
 import databaseConfig from 'src/config/database.config';
 import environValidation from 'src/config/environ.validation';
+import { JwtModule } from '@nestjs/jwt';
+import jwtConfig from 'src/auth/config/jwt.config';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard } from 'src/auth/guards/access-token.guard';
 
 const ENV = process.env.NODE_ENV;// Lấy ra trạng thái môi trường hiện tại mà ứng dụng đang chạy
 
@@ -38,8 +42,15 @@ const ENV = process.env.NODE_ENV;// Lấy ra trạng thái môi trường hiện
         synchronize: configService.get('database.synchronize'),// Tự động tạo bảng dưới Database dựa trên code Entity (Chỉ bật khi code ở local)
       }),
     }),
+    ConfigModule.forFeature(jwtConfig),// Đăng ký jwtConfig để AuthGuard có thể inject CONFIGURATION(jwt)
+      JwtModule.registerAsync(jwtConfig.asProvider() )
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService,
+    {
+          provide: APP_GUARD,
+          useClass: AuthGuard
+        }
+  ],
 })
 export class AppModule { }

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Query, DefaultValuePipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Query, DefaultValuePipe, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -6,16 +6,17 @@ import { patchUserDto } from './dto/patch-user.dto';
 import { getUsersParamsDto } from './dto/get-users-param.dto';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateManyUsersDto} from './dto/create-many-user.dto';
+import { AuthGuard } from 'src/auth/guards/access-token.guard';// Import AuthGuard để bảo vệ route
 
 @Controller('users')
-@ApiTags('users') // Thêm thẻ của API cho toàn bộ controller
+@ApiTags('users')
 export class UsersController {
-  // Chúng ta đang tiêm dịch vụ UsersService vào controller
   constructor(private readonly usersService: UsersService) {}
 
+  @UseGuards(AuthGuard) // Bảo vệ route bằng JWT authentication
   @ApiOperation({
-    summary: 'Thêm user',// Tóm tắt mô tả cho API
-    description: 'Thêm user',// Mô tả đầy đủ cho API
+    summary: 'Thêm user',
+    description: 'Thêm user',
   })
   @ApiResponse({
     status: 201,// Mã trạng thái HTTP
